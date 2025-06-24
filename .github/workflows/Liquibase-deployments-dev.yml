@@ -276,12 +276,18 @@ jobs:
           $tag = $release.tagName
           $description = $release.body
 
-          # Extract only the line that contains "CR List::"
-          $crLine = ($description -split "`n" | Where-Object { $_ -match '^CR List::' }) -join "`n"
+          # Normalize line endings and extract CR line
+          $descriptionLines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
+          $crLine = $descriptionLines | Where-Object { $_ -match 'CR List::' }
 
           Write-Host "`n==== Release Tag: $tag ===="
           Write-Host "`n==== CR Line Only ===="
-          Write-Host "$crLine"
+          if ($crLine) {
+            Write-Host "$crLine"
+          } else {
+            Write-Host "No CR line found in release description."
+          }
+
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
