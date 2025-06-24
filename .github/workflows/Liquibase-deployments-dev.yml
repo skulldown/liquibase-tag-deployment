@@ -269,13 +269,17 @@ jobs:
           mvn liquibase:update
           echo "-----------------------------------------------------------"
 
+          # --- Fetch and echo release info ---
           $release = gh release view --json tagName,body | ConvertFrom-Json
           $tag = $release.tagName
           $description = $release.body
 
+          # Extract only the line that contains "CR List::"
+          $crLine = ($description -split "`n" | Where-Object { $_ -match '^CR List::' }) -join "`n"
+
           Write-Host "`n==== Release Tag: $tag ===="
-          Write-Host "`n==== Release Description ===="
-          Write-Host "$description"
+          Write-Host "`n==== CR Line Only ===="
+          Write-Host "$crLine"
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
