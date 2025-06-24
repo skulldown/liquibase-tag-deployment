@@ -165,7 +165,7 @@ jobs:
           # Apply the tag to the current HEAD without running update again
           mvn liquibase:tag "-Dliquibase.tag=$tag_to_apply"
           
-  PROD_Liquibase_Job:
+  DEV_Liquibase_Job:
     if: github.event_name == 'release'
     runs-on: windows-latest
     steps:
@@ -264,7 +264,7 @@ jobs:
           $env:AWS_SDLF_ACCOUNT_ID = "872385779608" 
           mvn -version
           mvn install
-          echo "-----------------------------------------------------------"
+          echo "-----------------------Update start: ------------------------------------"
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
           mvn liquibase:update
           echo "-----------------------------------------------------------"
