@@ -74,6 +74,18 @@
              <snowflake.urlBase>jdbc:snowflake://LKGVJUZ-WS14116.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE</snowflake.urlBase>
            </properties>
       </profile>
+      <profile>
+           <id>prod</id>
+           <activation>
+              <property>
+                 <name>env.SNOWFLAKE_ENV_ID</name>
+                 <value>prod</value>
+              </property>
+           </activation>
+           <properties>
+             <snowflake.urlBase>jdbc:snowflake://LKGVJUZ-WS14116.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE</snowflake.urlBase>
+           </properties>
+      </profile>
 
       <profile>
            <id>default</id>
