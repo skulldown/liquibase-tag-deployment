@@ -1,7 +1,8 @@
 name: Dev - Liquibase deployments 
 on: 
-  pull_request: 
-    branches: 
+  release: 
+    types: [ published, edited]
+    branches:
       - main
   workflow_dispatch:
     inputs:
