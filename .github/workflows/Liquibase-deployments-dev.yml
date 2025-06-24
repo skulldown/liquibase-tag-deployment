@@ -271,22 +271,29 @@ jobs:
           mvn liquibase:update
           echo "-----------------------------------------------------------"
 
-          # --- Fetch and echo release info ---
-          $release = gh release view --json tagName,body | ConvertFrom-Json
-          $tag = $release.tagName
+          # Get the release info from GitHub
+          $release = gh release view --json body | ConvertFrom-Json
           $description = $release.body
 
-          # Normalize line endings and extract CR line
-          $descriptionLines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
-          $crLine = $descriptionLines | Where-Object { $_ -match 'CR List::' }
+          # Normalize line endings and split into lines
+          $lines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
 
-          Write-Host "`n==== Release Tag: $tag ===="
-          Write-Host "`n==== CR Line Only ===="
-          if ($crLine) {
-            Write-Host "$crLine"
+          # Step 1: Find the CR List line
+          $crLine = $lines | Where-Object { $_ -match '^CR List:' }
+
+          # Output the full CR line
+          Write-Host "`n==== Full CR Line ===="
+          Write-Host $crLine
+
+          # Step 2: Extract only the CR values (everything after "CR List:")
+          if ($crLine -match '^CR List:\s*(.+)$') {
+              $crValues = $matches[1]
+              Write-Host "`n==== CR Values Only ===="
+              Write-Host $crValues
           } else {
-            Write-Host "No CR line found in release description."
+              Write-Host "No CR line found!"
           }
+
 
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
