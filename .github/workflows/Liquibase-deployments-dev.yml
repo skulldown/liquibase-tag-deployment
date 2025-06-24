@@ -255,15 +255,17 @@ jobs:
           $env:SNOWFLAKE_ENV_ID = "DEV"
           $env:SNOWFLAKE_EXT_STG_ENV = "dev"
           $env:SNOWFLAKE_ACCOUNT = "LKGVJUZ-WS14116"
-          $env:SNOWFLAKE_WAREHOUSE = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
-          $env:SNOWFLAKE_ROLE = "SYSADMIN"
+          $env:SNOWFLAKE_WAREHOUSE = "SNOWFLAKE_LEARNING_WH"
+          $env:SNOWFLAKE_ROLE = "public"
           $env:SNOWFLAKE_USER = "${{ secrets.DEV_SNOWFLAKE_USERNAME }}"
-          echo "${{ secrets.DEV_SNF_USER_PRIVATE_KEY }}" > snowflake_key.p8
+          $env:SNOWFLAKE_PASSWORD = "${{ secrets.DEV_SNOWFLAKE_PASSWORD }}"
+          $env:AWS_ACCOUNT = "958500205200" 
+          $env:AWS_SDLF_ACCOUNT_ID = "763084030621" 
+          echo "${{ secrets.DEV_SNF_USER_PRIVATE_KEY }}" > snowflake_rsa_key.p8
           $env:SNF_USER_PRIVATE_KEY_PASSWORD = "${{ secrets.DEV_SNF_USER_PRIVATE_KEY_PASSWORD }}"
-          $env:AWS_ACCOUNT = "772161852393"
-          $env:AWS_SDLF_ACCOUNT_ID = "872385779608" 
           mvn -version
-          mvn install
+          mvn install 
+          chmod 600 snowflake_rsa_key.p8
           echo "-----------------------Update start: ------------------------------------"
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
           mvn liquibase:update
