@@ -231,7 +231,7 @@ jobs:
           # Log the MODULES variable
           Write-Host "Modules set: $($final_dirs -join ',')"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Authenticate GitHub CLI
+          GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
           
       - name: Replace <module> entries in the XML file & Run mvn liquibase update
         run: |
@@ -275,6 +275,6 @@ jobs:
           Write-Host "`n==== Release Description ===="
           Write-Host "$description"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.TOKEN }}
 
 
