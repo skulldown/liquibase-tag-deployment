@@ -252,14 +252,14 @@ jobs:
       - name: Configure snowflake variables
         run: |
           $env:JAVA_HOME = $env:JAVA_HOME_11_X64
-          $env:SNOWFLAKE_ENV_ID = "PROD"
-          $env:SNOWFLAKE_EXT_STG_ENV = "prod"
-          $env:SNOWFLAKE_ACCOUNT = "frhobru-ihqla01"
+          $env:SNOWFLAKE_ENV_ID = "DEV"
+          $env:SNOWFLAKE_EXT_STG_ENV = "dev"
+          $env:SNOWFLAKE_ACCOUNT = "LKGVJUZ-WS14116"
           $env:SNOWFLAKE_WAREHOUSE = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
           $env:SNOWFLAKE_ROLE = "SYSADMIN"
-          $env:SNOWFLAKE_USER = "${{ secrets.PROD_SNOWFLAKE_USERNAME }}"
-          echo "${{ secrets.PROD_SNF_USER_PRIVATE_KEY }}" > snowflake_key.p8
-          $env:SNF_USER_PRIVATE_KEY_PASSWORD = "${{ secrets.PROD_SNF_USER_PRIVATE_KEY_PASSWORD }}"
+          $env:SNOWFLAKE_USER = "${{ secrets.DEV_SNOWFLAKE_USERNAME }}"
+          echo "${{ secrets.DEV_SNF_USER_PRIVATE_KEY }}" > snowflake_key.p8
+          $env:SNF_USER_PRIVATE_KEY_PASSWORD = "${{ secrets.DEV_SNF_USER_PRIVATE_KEY_PASSWORD }}"
           $env:AWS_ACCOUNT = "772161852393"
           $env:AWS_SDLF_ACCOUNT_ID = "872385779608" 
           mvn -version
