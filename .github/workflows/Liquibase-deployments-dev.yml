@@ -270,9 +270,10 @@ jobs:
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
           mvn liquibase:update
           echo "-----------------------------------------------------------"
-
+                
           # Get the release info from GitHub
-          $release = gh release view --json body | ConvertFrom-Json
+          $release = gh release view --json tagName,body | ConvertFrom-Json
+          $tag = $release.tagName
           $description = $release.body
 
           # Normalize line endings and split into lines
@@ -281,18 +282,23 @@ jobs:
           # Step 1: Find the CR List line
           $crLine = $lines | Where-Object { $_ -match '^CR List:' }
 
-          # Output the full CR line
-          Write-Host "`n==== Full CR Line ===="
-          Write-Host $crLine
-
-          # Step 2: Extract only the CR values (everything after "CR List:")
+          # Step 2: Extract just the CR values (everything after "CR List:")
           if ($crLine -match '^CR List:\s*(.+)$') {
               $crValues = $matches[1]
-              Write-Host "`n==== CR Values Only ===="
-              Write-Host $crValues
-          } else {
-              Write-Host "No CR line found!"
           }
+
+          # Print everything
+          Write-Host "`n==== Release Tag ===="
+          Write-Host "$tag"
+
+          Write-Host "`n==== Full Release Description ===="
+          Write-Host "$description"
+
+          Write-Host "`n==== CR Line ===="
+          Write-Host "$crLine"
+
+          Write-Host "`n==== CR Values Only ===="
+          Write-Host "$crValues"
 
 
         env:
