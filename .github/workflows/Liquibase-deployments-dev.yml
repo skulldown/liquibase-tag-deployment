@@ -301,8 +301,7 @@ jobs:
           Write-Host "$crValues"
           
           mvn liquibase:tag "-Dliquibase.tag=$crValues"
-
-        # env:
-        #   GH_TOKEN: ${{ secrets.TOKEN }}
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
 
 
