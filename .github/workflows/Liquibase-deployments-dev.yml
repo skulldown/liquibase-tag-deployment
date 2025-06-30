@@ -293,14 +293,18 @@ jobs:
 
           Write-Host "`n==== Full Release Description ===="
           Write-Host "$description"
-
           Write-Host "`n==== CR Line ===="
           Write-Host "$crLine"
 
           Write-Host "`n==== CR Values Only ===="
           Write-Host "$crValues"
-          
-          mvn liquibase:tag "-Dliquibase.tag=$crValues"
+          if ($tag) {
+              mvn liquibase:tag "-Dliquibase.tag=$tag"
+          }
+          else {
+              Write-Host "❌ ERROR: No release tag found. Skipping Liquibase tagging."
+              exit 1
+          }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
