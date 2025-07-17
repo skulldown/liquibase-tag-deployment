@@ -299,7 +299,7 @@ jobs:
           Write-Host "`n==== CR Values Only ===="
           Write-Host "$crValues"
           if ($tag) {
-              mvn liquibase:tag "-Dliquibase.tag=$tag"
+              mvn liquibase:tag "-Dliquibase.tag=LIQUIBASE_RELEASE_ID_$tag"
           }
           else {
               Write-Host "❌ ERROR: No release tag found. Skipping Liquibase tagging."
