@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset 12:teacher_11empp123
+--changeset 12:teacher_11empp12345678
 
 use database DEV_RZ;
 use schema ACCOUNTING_ANALYTICS;
@@ -15,6 +15,13 @@ CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.teacher112(
 );
 
 
+
+CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.teacher100012(
+    ID             NUMBER       PRIMARY KEY,
+    NAME           STRING       NOT NULL,
+    STATUS         STRING,
+    CREATED_AT     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
 
 
 CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.student_12(
