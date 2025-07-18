@@ -17,6 +17,8 @@
 
 
     <modules>
+      <module>RZ/ACCOUNTING_ANALYTICS</module>
+      <module>RZ/AGILE_REPORTING</module>
       <module>TZ/ACCOUNTING_ANALYTICS</module>
     </modules>  
 
