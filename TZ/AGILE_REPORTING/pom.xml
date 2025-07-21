@@ -9,10 +9,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>rz.agile_reporting</artifactId>
+    <artifactId>tz.agile_reporting</artifactId>
 
     <properties>
-        <snowflake.db>RZ</snowflake.db>
+        <snowflake.db>TZ</snowflake.db>
         <snowflake.schema>AGILE_REPORTING</snowflake.schema>
     </properties>
 
