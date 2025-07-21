@@ -268,45 +268,14 @@ jobs:
           chmod 600 snowflake_rsa_key.p8
           echo "-----------------------Update start: ------------------------------------"
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
-          mvn liquibase:update
-          echo "-----------------------------------------------------------"
-                
           # Get the release info from GitHub
           $release = gh release view --json tagName,body | ConvertFrom-Json
           $release_tag = $release.tagName
+          $tag = "LIQUIBASE_RELEASE_ID_${release_tag}"
+          mvn liquibase:update \
+            -Dliquibase.tag=$tag
+          echo "-----------------------------------------------------------"
 
-          # Normalize line endings and split into lines
-          $lines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
-
-          # Step 1: Find the CR List line
-          $crLine = $lines | Where-Object { $_ -match '^CR List:' }
-
-          # Step 2: Extract just the CR values (everything after "CR List:")
-          if ($crLine -match '^CR List:\s*(.+)$') {
-              $crValues = $matches[1]
-          }
-
-         
-          $modules = "${{ steps.list-changes.outputs.MODULES }}" -split ','
-
-          if ($release_tag) {
-              Write-Host "`n==== Release Tag IS: ===="
-              Write-Host "$release_tag"
-              if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
-                  foreach ($module in $modules) {
-                      if ($module -ne "") {
-                          $tag = "LIQUIBASE_RELEASE_ID_${release_tag}"
-                          Write-Host "Tagging module $module with tag $tag"
-                          mvn liquibase:tag "-Dliquibase.tag=LIQUIBASE_RELEASE_ID_$tag"
-                      }
-                  }
-              } else {
-                  Write-Host "No modules found, skipping module-wise tagging."
-              }
-          } else {
-              Write-Host "❌ ERROR: No release tag found. Skipping Liquibase tagging."
-              exit 1
-          }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
