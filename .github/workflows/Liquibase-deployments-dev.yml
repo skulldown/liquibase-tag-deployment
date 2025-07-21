@@ -290,13 +290,13 @@ jobs:
          
           $modules = "${{ steps.list-changes.outputs.MODULES }}" -split ','
 
-          if ($release_tag) {
+          if ($release) {
               Write-Host "`n==== Release Tag IS: ===="
-              Write-Host "$release_tag"
+              Write-Host "$release"
               if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
                   foreach ($module in $modules) {
                       if ($module -ne "") {
-                          $tag = "LIQUIBASE_RELEASE_ID_${release_tag}_$module"
+                          $tag = "LIQUIBASE_RELEASE_ID_${release}_$module"
                           Write-Host "Tagging module $module with tag $tag"
                           mvn liquibase:tag "-Dliquibase.tag=LIQUIBASE_RELEASE_ID_$tag"
                       }
