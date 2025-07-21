@@ -298,7 +298,7 @@ jobs:
                       if ($module -ne "") {
                           $tag = "LIQUIBASE_RELEASE_ID_${release_tag}_$module"
                           Write-Host "Tagging module $module with tag $tag"
-                          mvn liquibase:tag "-Dliquibase.tag=$tag"
+                          mvn liquibase:tag "-Dliquibase.tag=LIQUIBASE_RELEASE_ID_$tag"
                       }
                   }
               } else {
