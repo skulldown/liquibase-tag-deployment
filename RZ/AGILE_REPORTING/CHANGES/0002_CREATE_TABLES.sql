@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-sadasddfgvdfg
+--changeset DEMO:0010-demo1
 use database DEV_RZ;
 use schema AGILE_REPORTING;
 use role FULL_ACCESS_ROLE;

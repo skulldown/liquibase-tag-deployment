@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-empp382dsgh
+--changeset DEMO:0010-demo1
 use database DEV_TZ;
 use schema AGILE_REPORTING;
 use role FULL_ACCESS_ROLE;
@@ -8,7 +8,7 @@ use warehouse SNOWFLAKE_LEARNING_WH;
 
 
 
-CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.empp382dsgh(
+CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.demo1(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
