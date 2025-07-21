@@ -287,21 +287,24 @@ jobs:
               $crValues = $matches[1]
           }
 
-          # Print everything
-          Write-Host "`n==== Release Tag ===="
-          Write-Host "$tag"
+         
+          $modules = "${{ steps.list-changes.outputs.MODULES }}" -split ','
 
-          Write-Host "`n==== Full Release Description ===="
-          Write-Host "$description"
-          Write-Host "`n==== CR Line ===="
-          Write-Host "$crLine"
-
-          Write-Host "`n==== CR Values Only ===="
-          Write-Host "$crValues"
-          if ($tag) {
-              mvn liquibase:tag "-Dliquibase.tag=$tag"
-          }
-          else {
+          if ($release_tag) {
+              Write-Host "`n==== Release Tag IS: ===="
+              Write-Host "$release_tag"
+              if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
+                  foreach ($module in $modules) {
+                      if ($module -ne "") {
+                          $tag = "LIQUIBASE_RELEASE_ID_${release_tag}_$module"
+                          Write-Host "Tagging module $module with tag $tag"
+                          mvn liquibase:tag "-Dliquibase.tag=$tag"
+                      }
+                  }
+              } else {
+                  Write-Host "No modules found, skipping module-wise tagging."
+              }
+          } else {
               Write-Host "❌ ERROR: No release tag found. Skipping Liquibase tagging."
               exit 1
           }

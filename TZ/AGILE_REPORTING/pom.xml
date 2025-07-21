@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>snowflake-datalake-schema</artifactId>
+        <groupId>groupId</groupId>
+        <version>1.0.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>rz.agile_reporting</artifactId>
+
+    <properties>
+        <snowflake.db>RZ</snowflake.db>
+        <snowflake.schema>AGILE_REPORTING</snowflake.schema>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                    <url>jdbc:snowflake://LKGVJUZ-WS14116.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE&amp;db=DEV_TZ&amp;schema=AGILE_REPORTING</url>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
