@@ -136,7 +136,7 @@ jobs:
           mvn liquibase:tag "-Dliquibase.tag=$tag_to_apply"
 
   Liquibase_Job_On_Branch:
-    if: github.event.inputs.environment == 'DEV'
+    if: github.event.inputs.environment == 'testing'
     runs-on: windows-latest
     steps:
       - name: Clone Repo
