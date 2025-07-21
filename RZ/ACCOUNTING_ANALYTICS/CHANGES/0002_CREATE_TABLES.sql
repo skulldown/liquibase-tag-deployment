@@ -1,13 +1,13 @@
 --liquibase formatted sql
 
---changeset 12:student11
+--changeset 12:student12
 
 use database DEV_RZ;
 use schema ACCOUNTING_ANALYTICS;
 use role FULL_ACCESS_ROLE;
 use warehouse SNOWFLAKE_LEARNING_WH;
 
-CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.student_11(
+CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.student_12(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
@@ -18,6 +18,6 @@ CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.student_11(
 
 
 
---changeset 12:tag_student10
+--changeset 12:tag_student12
 --comment: Tag deployment
 --tag: liquibase-dev-deploy-123
