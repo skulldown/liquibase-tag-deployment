@@ -73,7 +73,7 @@
               </property>
            </activation>
            <properties>
-             <snowflake.urlBase>jdbc:snowflake://LKGVJUZ-WS14116.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE</snowflake.urlBase>
+             <snowflake.urlBase>jdbc:snowflake://HFEHAXR-WI86289.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE</snowflake.urlBase>
            </properties>
       </profile>
       
@@ -84,7 +84,7 @@
              <activeByDefault>true</activeByDefault>
            </activation>
            <properties>
-             <snowflake.urlBase>jdbc:snowflake://LKGVJUZ-WS14116.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE</snowflake.urlBase>
+             <snowflake.urlBase>jdbc:snowflake://HFEHAXR-WI86289.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE</snowflake.urlBase>
            </properties>
        </profile>
     </profiles>
