@@ -7,7 +7,7 @@
 
     <property name="table_name" value="DATABASECHANGELOG"/>
     <!-- <property name="release_tag" value="default-tag"/> -->
-    <property name="release_tag" value="v1.0.0" />
+    <!-- <property name="release_tag" value="v1.0.0" /> -->
 
     <preConditions>
         <sqlCheck expectedResult="DEV_RZ.ACCOUNTING_ANALYTICS">
