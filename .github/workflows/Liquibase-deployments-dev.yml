@@ -273,8 +273,7 @@ jobs:
                 
           # Get the release info from GitHub
           $release = gh release view --json tagName,body | ConvertFrom-Json
-          $tag = $release.tagName
-          $description = $release.body
+          $release_tag = $release.tagName
 
           # Normalize line endings and split into lines
           $lines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
@@ -290,13 +289,13 @@ jobs:
          
           $modules = "${{ steps.list-changes.outputs.MODULES }}" -split ','
 
-          if ($release) {
+          if ($release_tag) {
               Write-Host "`n==== Release Tag IS: ===="
-              Write-Host "$release"
+              Write-Host "$release_tag"
               if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
                   foreach ($module in $modules) {
                       if ($module -ne "") {
-                          $tag = "LIQUIBASE_RELEASE_ID_${release}"
+                          $tag = "LIQUIBASE_RELEASE_ID_${release_tag}"
                           Write-Host "Tagging module $module with tag $tag"
                           mvn liquibase:tag "-Dliquibase.tag=LIQUIBASE_RELEASE_ID_$tag"
                       }
