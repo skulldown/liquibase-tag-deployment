@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_1(
 );
 
 
+
 -- CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.empp382asasdsgh(
 --     ID             NUMBER       PRIMARY KEY,
 --     NAME           STRING       NOT NULL,
