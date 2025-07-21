@@ -1,13 +1,13 @@
 --liquibase formatted sql
 
---changeset 12:student_11988914sd12
+--changeset 12:student_11988914sdd12
 
 use database DEV_RZ;
 use schema ACCOUNTING_ANALYTICS;
 use role FULL_ACCESS_ROLE;
 use warehouse SNOWFLAKE_LEARNING_WH;
 
-CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.student_119889112(
+CREATE TABLE IF NOT EXISTS DEV_RZ.ACCOUNTING_ANALYTICS.student_119d889112(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
