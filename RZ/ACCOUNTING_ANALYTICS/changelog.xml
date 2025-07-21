@@ -14,10 +14,10 @@
             SELECT CONCAT(CURRENT_DATABASE(), '.', CURRENT_SCHEMA());
         </sqlCheck>
     </preConditions>
-    <changeSet id="tag-1.0.0" author="test-1">
+    <changeSet id="tag-1.0.0" author="test-1" runOnChange="true" runAlways="true">
         <tagDatabase tag="v1.0.0"/>
     </changeSet>
-    
+
 
     <!-- <changeSet id="tag-${release_tag}" author="test-1">
         <tagDatabase tag="${release_tag}"/>
