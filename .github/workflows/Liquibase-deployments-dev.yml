@@ -296,7 +296,7 @@ jobs:
               if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
                   foreach ($module in $modules) {
                       if ($module -ne "") {
-                          $tag = "LIQUIBASE_RELEASE_ID_${release}_$module"
+                          $tag = "LIQUIBASE_RELEASE_ID_${release}"
                           Write-Host "Tagging module $module with tag $tag"
                           mvn liquibase:tag "-Dliquibase.tag=LIQUIBASE_RELEASE_ID_$tag"
                       }
