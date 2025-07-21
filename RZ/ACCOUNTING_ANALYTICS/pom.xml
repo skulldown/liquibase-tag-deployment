@@ -25,7 +25,7 @@
                 <version>4.28.0</version>
                 <configuration>
                     <skip>false</skip>
-                    <url>jdbc:snowflake://HFEHAXR-WI86289.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE&amp;db=DEV_RZ&amp;schema=ACCOUNTING_ANALYTICS</url>
+                    <url>jdbc:snowflake://LKGVJUZ-WS14116.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE&amp;db=DEV_RZ&amp;schema=ACCOUNTING_ANALYTICS</url>
                 </configuration>
             </plugin>
         </plugins>

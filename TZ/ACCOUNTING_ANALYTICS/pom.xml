@@ -10,17 +10,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-<<<<<<< HEAD
-    <artifactId>rz.accounting_analytics</artifactId>
-
-    <properties>
-        <snowflake.db>RZ</snowflake.db>
-=======
     <artifactId>tz.accounting_analytics</artifactId>
 
     <properties>
         <snowflake.db>TZ</snowflake.db>
->>>>>>> 183964e850c5269ee9cfcc83e512bb667878beaa
         <snowflake.schema>ACCOUNTING_ANALYTICS</snowflake.schema>
     </properties>
 
@@ -32,11 +25,7 @@
                 <version>4.28.0</version>
                 <configuration>
                     <skip>false</skip>
-<<<<<<< HEAD
-                    <url>jdbc:snowflake://HFEHAXR-WI86289.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE&amp;db=DEV_TZ&amp;schema=ACCOUNTING_ANALYTICS</url>
-=======
                     <url>jdbc:snowflake://HFEHAXR-WI86289.snowflakecomputing.com/?warehouse=SNOWFLAKE_LEARNING_WH&amp;role=FULL_ACCESS_ROLE&amp;db=DEV_RZ&amp;schema=ACCOUNTING_ANALYTICS</url>
->>>>>>> 183964e850c5269ee9cfcc83e512bb667878beaa
                 </configuration>
             </plugin>
         </plugins>
