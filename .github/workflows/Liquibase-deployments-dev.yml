@@ -16,6 +16,10 @@ on:
           required: true
           type: string
           description: "Liquibase tag to apply (e.g. liquibase-dev-deploy-123)"
+  pull_request:
+    types: [ opened, edited ]
+    branches:
+      - main
 
 jobs:
 
