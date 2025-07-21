@@ -23,7 +23,7 @@
     </changeSet> -->
 
     <include file="CHANGES/0002_CREATE_TABLES.sql" relativeToChangelogFile="true"/>
-    <changeSet id="tag-0002" author="auto">
+    <!-- <changeSet id="tag-0002" author="auto">
         <tagDatabase tag="v1.0.0"/>
-    </changeSet>
+    </changeSet> -->
 </databaseChangeLog>
