@@ -20,6 +20,9 @@ on:
     types: [ opened, edited ]
     branches:
       - main
+  push:
+    branches:
+      - testing
 
 
 jobs:
