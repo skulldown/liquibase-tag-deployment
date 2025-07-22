@@ -8,6 +8,7 @@ use warehouse SNOWFLAKE_LEARNING_WH;
 
 
 
+
 CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.demod23(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
