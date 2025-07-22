@@ -1,7 +1,7 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-student_12 labels:labale_rz_11 tagDatabase:DEV_RZ_22_july
-
+--changeset DEMO:0010-student_12 labels:labale_rz_11 
+--tagDatabase: 'DEV_RZ_22_july'
 use database DEV_RZ;
 use schema AGILE_REPORTING;
 use role FULL_ACCESS_ROLE;
