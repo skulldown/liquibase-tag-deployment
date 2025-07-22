@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-student_16 labels:${liquibase.label}
+--changeset DEMO:0010-student_17 labels:${liquibase.label}
 
 use database DEV_RZ;
 use schema AGILE_REPORTING;
@@ -10,7 +10,7 @@ use warehouse SNOWFLAKE_LEARNING_WH;
 
 
 
-CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_16(
+CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_17(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
