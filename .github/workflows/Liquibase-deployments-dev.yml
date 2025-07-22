@@ -20,9 +20,9 @@ on:
     types: [ opened, edited ]
     branches:
       - main
-  push:
-    branches:
-      - testing
+  # push:
+  #   branches:
+  #     - testing
 
 
 jobs:
@@ -345,7 +345,16 @@ jobs:
           # Extract top-level and sub-directories (first 2 parts), normalize slashes
           $filtered_dirs = $changed_files | 
             Where-Object { $_ -match '/' } |
-            ForEach-Object { ($_ -replace '/', '\') -split '\\' | Select-Object -First 2 -join '\' } |
+            ForEach-Object {
+              $splitPath = ($_ -replace '/', '\') -split '\\'
+              if ($splitPath.Count -ge 2) {
+                "$($splitPath[0])\$($splitPath[1])"
+              } elseif ($splitPath.Count -eq 1) {
+                "$($splitPath[0])"
+              } else {
+                ""
+              }
+            } |
             Sort-Object -Unique
 
           # Filter directories by pattern
@@ -371,10 +380,11 @@ jobs:
           # Output filtered modules
           Write-Host "Modules changed: $($final_dirs -join ',')"
 
-          # Export for GitHub Actions
+          # Export to GitHub Actions output
           echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
+
       - name: Replace <module> entries in the XML file & Run mvn liquibase update
         run: |
           # Specify the file to edit
