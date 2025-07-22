@@ -277,45 +277,119 @@ jobs:
           echo "-----------------------Update start: ------------------------------------"
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
           mvn liquibase:update
-          echo "-----------------------------------------------------------"
+          # echo "-----------------------------------------------------------"
                 
-          # Get the release info from GitHub
-          $release = gh release view --json tagName,body | ConvertFrom-Json
-          $release_tag = $release.tagName
+          # # Get the release info from GitHub
+          # $release = gh release view --json tagName,body | ConvertFrom-Json
+          # $release_tag = $release.tagName
 
-          # Normalize line endings and split into lines
-          $lines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
+          # # Normalize line endings and split into lines
+          # $lines = $description -replace "`r`n", "`n" -replace "`r", "`n" -split "`n"
 
-          # Step 1: Find the CR List line
-          $crLine = $lines | Where-Object { $_ -match '^CR List:' }
+          # # Step 1: Find the CR List line
+          # $crLine = $lines | Where-Object { $_ -match '^CR List:' }
 
-          # Step 2: Extract just the CR values (everything after "CR List:")
-          if ($crLine -match '^CR List:\s*(.+)$') {
-              $crValues = $matches[1]
-          }
+          # # Step 2: Extract just the CR values (everything after "CR List:")
+          # if ($crLine -match '^CR List:\s*(.+)$') {
+          #     $crValues = $matches[1]
+          # }
 
          
-          $modules = "${{ steps.list-changes.outputs.MODULES }}" -split ','
+          # $modules = "${{ steps.list-changes.outputs.MODULES }}" -split ','
 
-          if ($release_tag) {
-              Write-Host "`n==== Release Tag IS: ===="
-              Write-Host "$release_tag"
-              if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
-                  foreach ($module in $modules) {
-                      if ($module -ne "") {
-                          $tag = "LIQUIBASE_RELEASE_ID_${release_tag}"
-                          Write-Host "Tagging module $module with tag $tag"
-                          mvn liquibase:tag "-Dliquibase.tag=$tag"
-                      }
-                  }
-              } else {
-                  Write-Host "No modules found, skipping module-wise tagging."
-              }
-          } else {
-              Write-Host "❌ ERROR: No release tag found. Skipping Liquibase tagging."
-              exit 1
-          }
+          # if ($release_tag) {
+          #     Write-Host "`n==== Release Tag IS: ===="
+          #     Write-Host "$release_tag"
+          #     if ($modules -and $modules.Count -gt 0 -and $modules[0] -ne "") {
+          #         foreach ($module in $modules) {
+          #             if ($module -ne "") {
+          #                 $tag = "LIQUIBASE_RELEASE_ID_${release_tag}"
+          #                 Write-Host "Tagging module $module with tag $tag"
+          #                 mvn liquibase:tag "-Dliquibase.tag=$tag"
+          #             }
+          #         }
+          #     } else {
+          #         Write-Host "No modules found, skipping module-wise tagging."
+          #     }
+          # } else {
+          #     Write-Host "❌ ERROR: No release tag found. Skipping Liquibase tagging."
+          #     exit 1
+          # }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
+
+      - name: Get current and previous release changes
+        id: list-changes-two-releases
+        run: |
+          # Fetch the latest 2 release tags
+          $RELEASE_TAGS = @(gh release list --limit 2 | awk '{print $1}')
+
+          # Print fetched tags
+          Write-Host "Found Tags: $($RELEASE_TAGS -join ', ')"
+
+          # Exit if fewer than 2 tags
+          if ($RELEASE_TAGS.Count -lt 2) {
+              Write-Host "Not enough tags to compare."
+              exit 1
+          }
+
+          # Assign tags
+          $newerTag = $RELEASE_TAGS[0]   # Most recent release
+          $olderTag = $RELEASE_TAGS[1]   # Previous release
+
+          Write-Host "Comparing changes between $olderTag → $newerTag"
+
+          # Get changed files between the two tags
+          $changed_files = git diff --name-only $olderTag $newerTag
+
+          # Extract top-level and sub-directories (first 2 parts), normalize slashes
+          $filtered_dirs = $changed_files | 
+            Where-Object { $_ -match '/' } |
+            ForEach-Object { ($_ -replace '/', '\') -split '\\' | Select-Object -First 2 -join '\' } |
+            Sort-Object -Unique
+
+          # Filter directories by pattern
+          $final_dirs = $filtered_dirs | Where-Object { 
+            $_ -like 'QUALITY*' -or 
+            $_ -like 'AUDIT*' -or 
+            $_ -like 'RZ*' -or 
+            $_ -like 'RCZ*' -or 
+            $_ -like 'TZ*' -or 
+            $_ -like 'CZ*' -or 
+            $_ -like 'SECURITY*' -or
+            $_ -like 'MULESOFT*' -or
+            $_ -like 'DATA_SHARE*' -or
+            $_ -like 'WORK_FLOW_TEST*'
+          } | ForEach-Object {
+            if ($_ -like 'QUALITY*') {
+              "QUALITY"
+            } else {
+              $_
+            }
+          } | Sort-Object -Unique
+
+          # Output filtered modules
+          Write-Host "Modules changed: $($final_dirs -join ',')"
+
+          # Export for GitHub Actions
+          echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
+      - name: Replace <module> entries in the XML file & Run mvn liquibase update
+        run: |
+          # Specify the file to edit
+          $FILE = "pom.xml"
+          $MODULES = "${{ steps.list-changes-two-releases.outputs.MODULES }}"
+          # Ensure there's a valid list of filtered modules
+          if ($MODULES -eq "" -or $MODULES.Count -eq 0) {
+            Write-Host "No modules to include. Exiting."
+            exit
+          }
+          $INCLUDEMODULES = $MODULES | ForEach-Object { $_ -replace '\\', '/' }
+          Write-Host "Modules to include: $INCLUDEMODULES"
+          
+          $MODULES = "${{ steps.list-changes-two-releases.outputs.MODULES }}" -split ','
+          .github\workflows\workflow_scripts\pom_modules_extract.ps1
+         
 
 
