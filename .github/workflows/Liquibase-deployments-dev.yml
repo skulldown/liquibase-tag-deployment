@@ -385,21 +385,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Replace <module> entries in the XML file & Run mvn liquibase update
+      - name: Use filtered modules
         run: |
-          # Specify the file to edit
-          $FILE = "pom.xml"
           $MODULES = "${{ steps.list-changes-two-releases.outputs.MODULES }}"
-          # Ensure there's a valid list of filtered modules
-          if ($MODULES -eq "" -or $MODULES.Count -eq 0) {
-            Write-Host "No modules to include. Exiting."
-            exit
+          if (-not $MODULES) {
+            Write-Host "❌ No modules found. Exiting."
+            exit 0
           }
-          $INCLUDEMODULES = $MODULES | ForEach-Object { $_ -replace '\\', '/' }
-          Write-Host "Modules to include: $INCLUDEMODULES"
-          
-          $MODULES = "${{ steps.list-changes-two-releases.outputs.MODULES }}" -split ','
+          $INCLUDEMODULES = $MODULES -split ',' | ForEach-Object { $_ -replace '\\', '/' }
+          Write-Host "Modules to include: $($INCLUDEMODULES -join ', ')"
+
+          # Call your script or pass modules into Maven
           .github\workflows\workflow_scripts\pom_modules_extract.ps1
-         
+
+              
 
 
