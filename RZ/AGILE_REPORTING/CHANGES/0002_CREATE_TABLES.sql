@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-student_17 labels:${liquibase.label}
+--changeset DEMO:0010-student_18 labels:${liquibase.label}
 
 use database DEV_RZ;
 use schema AGILE_REPORTING;
