@@ -144,11 +144,13 @@ jobs:
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
           # mvn liquibase:update
 
-          $log = mvn liquibase:update --logLevel=info | Tee-Object -Variable outLog
-          
-          # Parse log into a dictionary
+         
+          # Run and capture logs
+          $log = mvn liquibase:update | Tee-Object -Variable outLog
+
           $map = @{}
           $lastFile = ""
+
           foreach ($line in $outLog) {
             if ($line -match "Successfully executed changeSet ([^\s:]+)::") {
               $lastFile = $matches[1]
@@ -161,10 +163,7 @@ jobs:
             }
           }
 
-          # Convert to JSON
           $json = $map | ConvertTo-Json -Depth 3 -Compress
-
-          # Set as output for next step
           echo "deployment_json=$json" >> $env:GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
