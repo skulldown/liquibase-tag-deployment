@@ -194,6 +194,9 @@ jobs:
           echo "deployment_json=$json" >> $env:GITHUB_OUTPUT
           echo "------------------ JSON ------------------"
           echo "$json"
+
+          echo "-----------------------Update end: ------------------------------------"
+          ${{ steps.liquibase-update.outputs.deployment_json }}
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
