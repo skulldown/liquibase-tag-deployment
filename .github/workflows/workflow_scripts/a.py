@@ -4,21 +4,19 @@ import os
 import snowflake.connector
 
 
-
-
 # === Main Script ===
 if len(sys.argv) < 4:
     print("Usage: a.py <CHANGED_FILES> <NEWER_TAG> <DEPLOYMENT_JSON>")
     sys.exit(1)
 
-changed_files_raw = sys.argv[1]
-newer_tag = sys.argv[2]
+last_relese_CHANGED_FILES = sys.argv[1]
+newer_release_tag = sys.argv[2]
 deployment_json_raw = sys.argv[3]
 
-# print("== Received Parameters ==")
-# print(f"CHANGED_FILES: {changed_files_raw}")
-# print(f"NEWER_TAG: {newer_tag}")
-# print(f"DEPLOYMENT_JSON: {deployment_json_raw}\n")
+print("== Received Parameters ==Smit")
+print(f"last_relese_CHANGED_FILES: {last_relese_CHANGED_FILES}")
+print(f"NEWER_TAG: {newer_release_tag}")
+print(f"DEPLOYMENT_JSON: {deployment_json_raw}\n")
 
 # changed_files_list = changed_files_raw.split('|')
 

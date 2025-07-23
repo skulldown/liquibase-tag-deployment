@@ -1,10 +1,3 @@
-￼
-snowflake-datalake-schema
-Private
-￼
-Watch15
-￼Fork 0
-￼ Starred 1
 import snowflake.connector
 import time
 import os
