@@ -124,6 +124,7 @@ jobs:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Configure snowflake variables
+        id: liquibase-update   
         run: |
           $env:JAVA_HOME = $env:JAVA_HOME_11_X64
           $env:SNOWFLAKE_ENV_ID = "DEV"
@@ -145,7 +146,6 @@ jobs:
           # mvn liquibase:update
 
          
-          # Run and capture logs
           $log = mvn liquibase:update | Tee-Object -Variable outLog
 
           $map = @{}
@@ -165,6 +165,10 @@ jobs:
 
           $json = $map | ConvertTo-Json -Depth 3 -Compress
           echo "deployment_json=$json" >> $env:GITHUB_OUTPUT
+          
+
+          echo "--------------------deployment_json---------------------------"
+          echo "$json"
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
@@ -173,6 +177,7 @@ jobs:
           echo "Changed files:"
           echo "${{ steps.list-changes.outputs.CHANGED_FILES }}"
           echo "${{ steps.list-changes.outputs.NEWER_TAG }}"
+          echo "${{ steps.liquibase-update.outputs.deployment_json }}"
 
       - name: Add tags using Python script
         run: |
