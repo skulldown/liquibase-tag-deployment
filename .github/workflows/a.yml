@@ -26,46 +26,39 @@ on:
 
 
 jobs:
-
   DEV_Liquibase_Job:
     if: github.event_name == 'release'
     runs-on: windows-latest
+
     steps:
       - name: Clone Repo
         uses: actions/checkout@v4
-      
+
       - name: Fetch all tags
         run: git fetch origin 'refs/tags/*:refs/tags/*' --force
 
       - name: Get the latest 2 release tags & changes between them
         id: list-changes
+        shell: pwsh
         run: |
-          # Fetch the latest 2 release tags
           $RELEASE_TAGS = @(gh release list --limit 2 | awk '{print $1}')
+          Write-Host "Found Tags: $($RELEASE_TAGS -join ', ')"
 
-          # Debugging: Print the last 2 tags
-          Write-Host "the last 2 tags: $($RELEASE_TAGS -join ', ')"
-
-          # Check if we have any tags
           if (-not $RELEASE_TAGS) {
-              Write-Host "No tags found!"
-              exit
+            Write-Host "No tags found!"
+            exit 1
           }
 
-          # Get the older and newer tag
-          $newerTag = $RELEASE_TAGS[0]  # Newest tag (1st tag)
-          $olderTag = $RELEASE_TAGS[-1] # # Oldest tag (4th tag)
-
-          # Debugging - Ensure tags are correct
+          $newerTag = $RELEASE_TAGS[0]
+          $olderTag = $RELEASE_TAGS[1]
           Write-Host "Comparing changes between $olderTag and $newerTag"
 
-          # Get the changes between the two tags
           $changed_files = git diff --name-only $olderTag $newerTag
-          
-          # Extract directories and filter based on specific patterns
+          Write-Host "Changed files:"
+          $changed_files
+
           $filtered_dirs = $changed_files | Select-String -Pattern '/' | ForEach-Object { $_ -replace '/', '\' } | ForEach-Object { ($_ -split '\\')[0..1] -join '\' } | Sort-Object -Unique
-          
-          # Apply filtering based on multiple patterns
+
           $final_dirs = $filtered_dirs | Where-Object { 
             $_ -like 'QUALITY*' -or 
             $_ -like 'AUDIT*' -or 
@@ -79,41 +72,43 @@ jobs:
             $_ -like 'WORK_FLOW_TEST*'
           } | ForEach-Object {
             if ($_ -like 'QUALITY*') {
-              "QUALITY"  # Only include "QUALITY" for QUALITY-related directories
+              "QUALITY"
             } else {
-              $_         # Include the full directory path for others
+              $_
             }
-          } | Sort-Object -Unique 
+          } | Sort-Object -Unique
 
-          # Output the final directories for reference
-          Write-Host "Filtered directories:"
-
-          # Convert the array of directories to a list for later use
-          echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
-          # Log the MODULES variable
           Write-Host "Modules set: $($final_dirs -join ',')"
 
-          echo "------------------------"
-          echo $changed_files
+          # Set GitHub outputs
+          echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
+          echo "CHANGED_FILES=$($changed_files -join '|')" >> $env:GITHUB_OUTPUT
         env:
-          GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
-          
+          GH_TOKEN: ${{ secrets.TOKEN }}
+
       - name: Replace <module> entries in the XML file & Run mvn liquibase update
+        shell: pwsh
         run: |
-          # Specify the file to edit
-          $FILE = "pom.xml"
           $MODULES = "${{ steps.list-changes.outputs.MODULES }}"
-          # Ensure there's a valid list of filtered modules
-          if ($MODULES -eq "" -or $MODULES.Count -eq 0) {
+          if (-not $MODULES) {
             Write-Host "No modules to include. Exiting."
-            exit
+            exit 0
           }
-          $INCLUDEMODULES = $MODULES | ForEach-Object { $_ -replace '\\', '/' }
+          $INCLUDEMODULES = $MODULES -split ',' | ForEach-Object { $_ -replace '\\', '/' }
           Write-Host "Modules to include: $INCLUDEMODULES"
-          # Get the dynamically filtered modules from the previous step
-          $MODULES = "${{ steps.list-changes.outputs.MODULES }}" -split ','
           .github\workflows\workflow_scripts\pom_modules_extract.ps1
-          
+
+      - name: Print changed files from previous step
+        run: |
+          echo "Changed files:"
+          echo "${{ steps.list-changes.outputs.CHANGED_FILES }}"
+
+      - name: Add tags using Python script
+        run: |
+          python .github\workflows\workflow_scripts\a.py "${{ steps.list-changes.outputs.CHANGED_FILES }}"
+
+
+
       # - name: Configure snowflake variables
       #   run: |
       #     $env:JAVA_HOME = $env:JAVA_HOME_11_X64
@@ -133,7 +128,7 @@ jobs:
       #     chmod 600 snowflake_rsa_key.p8
       #     echo "-----------------------Update start: ------------------------------------"
       #     $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
-      #     mvn liquibase:update "-Dliquibase.label=labale_rz_15" 
+      #     mvn liquibase:update
       #   env:
       #     GH_TOKEN: ${{ secrets.TOKEN }}
 
