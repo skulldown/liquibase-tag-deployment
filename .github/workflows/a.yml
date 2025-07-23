@@ -92,6 +92,9 @@ jobs:
           echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
           # Log the MODULES variable
           Write-Host "Modules set: $($final_dirs -join ',')"
+
+          echo "------------------------"
+          echo $changed_files
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
           
