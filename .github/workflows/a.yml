@@ -195,19 +195,20 @@ jobs:
           echo "------------------ JSON ------------------"
           echo "$json"
 
-          echo "-----------------------Update end: ------------------------------------"
-          ${{ steps.liquibase-update.outputs.deployment_json }}
+         
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Print changed files from previous step
-        run: |
-          echo "Changed files:"
-          echo "${{ steps.list-changes.outputs.CHANGED_FILES }}"
-          echo "${{ steps.list-changes.outputs.NEWER_TAG }}"
-          echo "${{ steps.liquibase-update.outputs.deployment_json }}"
-
       - name: Add tags using Python script
+        shell: bash
         run: |
-          python .github\workflows\workflow_scripts\a.py "${{ steps.list-changes.outputs.CHANGED_FILES }}" "${{ steps.list-changes.outputs.NEWER_TAG }}" "${{ steps.liquibase-update.outputs.deployment_json }}"
+          echo "== Debug Output =="
+          echo "CHANGED_FILES: ${{ steps.list-changes.outputs.CHANGED_FILES }}"
+          echo "NEWER_TAG: ${{ steps.list-changes.outputs.NEWER_TAG }}"
+          echo "DEPLOYMENT_JSON:"
+          echo '${{ steps.liquibase-update.outputs.deployment_json }}'
 
+          python .github/workflows/workflow_scripts/a.py \
+            "${{ steps.list-changes.outputs.CHANGED_FILES }}" \
+            "${{ steps.list-changes.outputs.NEWER_TAG }}" \
+            '${{ steps.liquibase-update.outputs.deployment_json }}'
