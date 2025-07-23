@@ -123,6 +123,52 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
+      - name: Configure snowflake variables
+        run: |
+          $env:JAVA_HOME = $env:JAVA_HOME_11_X64
+          $env:SNOWFLAKE_ENV_ID = "DEV"
+          $env:SNOWFLAKE_EXT_STG_ENV = "dev"
+          $env:SNOWFLAKE_ACCOUNT = "HFEHAXR-WI86289"
+          $env:SNOWFLAKE_WAREHOUSE = "SNOWFLAKE_LEARNING_WH"
+          $env:SNOWFLAKE_ROLE = "public"
+          $env:SNOWFLAKE_USER = "${{ secrets.DEV_SNOWFLAKE_USERNAME }}"
+          $env:SNOWFLAKE_PASSWORD = "${{ secrets.DEV_SNOWFLAKE_PASSWORD }}"
+          $env:AWS_ACCOUNT = "958500205200" 
+          $env:AWS_SDLF_ACCOUNT_ID = "763084030621" 
+          echo "${{ secrets.DEV_SNF_USER_PRIVATE_KEY }}" > snowflake_rsa_key.p8
+          $env:SNF_USER_PRIVATE_KEY_PASSWORD = "${{ secrets.DEV_SNF_USER_PRIVATE_KEY_PASSWORD }}"
+          mvn -version
+          mvn install 
+          chmod 600 snowflake_rsa_key.p8
+          echo "-----------------------Update start: ------------------------------------"
+          $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
+          # mvn liquibase:update
+
+          $log = mvn liquibase:update --logLevel=info | Tee-Object -Variable outLog
+          
+          # Parse log into a dictionary
+          $map = @{}
+          $lastFile = ""
+          foreach ($line in $outLog) {
+            if ($line -match "Successfully executed changeSet ([^\s:]+)::") {
+              $lastFile = $matches[1]
+            }
+            if ($line -match "Deployment ID: ([\w-]+)") {
+              if ($lastFile) {
+                $map[$lastFile] = $matches[1]
+                $lastFile = ""
+              }
+            }
+          }
+
+          # Convert to JSON
+          $json = $map | ConvertTo-Json -Depth 3 -Compress
+
+          # Set as output for next step
+          echo "deployment_json=$json" >> $env:GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
+
       - name: Print changed files from previous step
         run: |
           echo "Changed files:"
@@ -131,31 +177,5 @@ jobs:
 
       - name: Add tags using Python script
         run: |
-          python .github\workflows\workflow_scripts\a.py "${{ steps.list-changes.outputs.CHANGED_FILES }}" "${{ steps.list-changes.outputs.NEWER_TAG }}"
-
-
-
-      # - name: Configure snowflake variables
-      #   run: |
-      #     $env:JAVA_HOME = $env:JAVA_HOME_11_X64
-      #     $env:SNOWFLAKE_ENV_ID = "DEV"
-      #     $env:SNOWFLAKE_EXT_STG_ENV = "dev"
-      #     $env:SNOWFLAKE_ACCOUNT = "HFEHAXR-WI86289"
-      #     $env:SNOWFLAKE_WAREHOUSE = "SNOWFLAKE_LEARNING_WH"
-      #     $env:SNOWFLAKE_ROLE = "public"
-      #     $env:SNOWFLAKE_USER = "${{ secrets.DEV_SNOWFLAKE_USERNAME }}"
-      #     $env:SNOWFLAKE_PASSWORD = "${{ secrets.DEV_SNOWFLAKE_PASSWORD }}"
-      #     $env:AWS_ACCOUNT = "958500205200" 
-      #     $env:AWS_SDLF_ACCOUNT_ID = "763084030621" 
-      #     echo "${{ secrets.DEV_SNF_USER_PRIVATE_KEY }}" > snowflake_rsa_key.p8
-      #     $env:SNF_USER_PRIVATE_KEY_PASSWORD = "${{ secrets.DEV_SNF_USER_PRIVATE_KEY_PASSWORD }}"
-      #     mvn -version
-      #     mvn install 
-      #     chmod 600 snowflake_rsa_key.p8
-      #     echo "-----------------------Update start: ------------------------------------"
-      #     $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
-      #     mvn liquibase:update
-      #   env:
-      #     GH_TOKEN: ${{ secrets.TOKEN }}
-
+          python .github\workflows\workflow_scripts\a.py "${{ steps.list-changes.outputs.CHANGED_FILES }}" "${{ steps.list-changes.outputs.NEWER_TAG }}" "${{ steps.liquibase-update.outputs.deployment_json }}"
 
