@@ -129,9 +129,10 @@ jobs:
           echo "${{ steps.list-changes.outputs.CHANGED_FILES }}"
           echo "${{ steps.list-changes.outputs.NEWER_TAG }}"
 
-      # - name: Add tags using Python script
-      #   run: |
-      #     python .github\workflows\workflow_scripts\a.py "${{ steps.list-changes.outputs.CHANGED_FILES }}"
+      - name: Add tags using Python script
+        run: |
+          python .github\workflows\workflow_scripts\a.py "${{ steps.list-changes.outputs.CHANGED_FILES }}" "${{ steps.list-changes.outputs.NEWER_TAG }}"
+
 
 
       # - name: Configure snowflake variables
