@@ -15,8 +15,33 @@ print(f"Type of CHANGED_FILES: {type(changed_files_raw)}")
 print(f"NEWER_TAG: {newer_tag}")
 print(f"Type of NEWER_TAG: {type(newer_tag)}")
 
-# Optional: Split changed files into a list
+# Split the changed files using the | delimiter
 changed_files_list = changed_files_raw.split('|')
-print("\nParsed CHANGED_FILES as list:")
-for file in changed_files_list:
-    print(f"- {file}")
+
+# List of allowed top-level folders
+allowed_folders = {
+    "QUALITY",
+    "AUDIT",
+    "RZ",
+    "RCZ",
+    "TZ",
+    "CZ",
+    "SECURITY",
+    "MULESOFT",
+    "DATA_SHARE",
+    "WORK_FLOW_TEST"
+}
+
+# Filter files based on first folder name
+filtered_files = []
+for file_path in changed_files_list:
+    if not file_path.strip():
+        continue
+    first_folder = file_path.strip().split('/')[0]
+    if first_folder.upper() in allowed_folders:
+        filtered_files.append(file_path)
+
+# Print filtered results
+print("\nFiltered Changed Files:")
+for f in filtered_files:
+    print(f"- {f}")
