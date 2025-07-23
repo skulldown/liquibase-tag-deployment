@@ -145,27 +145,42 @@ jobs:
           $env:MAVEN_OPTS="-Dnet.snowflake.jdbc.enableBouncyCastle=true" 
           # mvn liquibase:update
 
-         
           $log = mvn liquibase:update | Tee-Object -Variable outLog
 
           $map = @{}
-          $lastFile = ""
+          $currentFile = ""
+          $currentChangeSetId = ""
 
           foreach ($line in $outLog) {
-            if ($line -match "Successfully executed changeSet ([^\s:]+)::") {
-              $lastFile = $matches[1]
+            # Print each line for debugging
+            Write-Host "LOG >> $line"
+
+            # Extract file path and changeset ID
+            if ($line -match "INFO .* ChangeSet:\s+([^\s]+)::([^\s]+)::") {
+              $currentFile = $matches[1]
+              $currentChangeSetId = $matches[2]
+              Write-Host "✔ Matched ChangeSet: $currentFile, ID: $currentChangeSetId"
             }
-            if ($line -match "Deployment ID: ([\w-]+)") {
-              if ($lastFile) {
-                $map[$lastFile] = $matches[1]
-                $lastFile = ""
+
+            # Match deployment ID (from Liquibase internal log)
+            if ($line -match "INFO .* DeploymentId:\s*([a-f0-9-]+)") {
+              $deploymentId = $matches[1]
+
+              if ($currentFile -ne "") {
+                $key = "$currentFile|$currentChangeSetId"
+                $map[$key] = $deploymentId
+                Write-Host "✔ Added Deployment Mapping: $key → $deploymentId"
+
+                # Reset current
+                $currentFile = ""
+                $currentChangeSetId = ""
               }
             }
           }
 
+          # Convert map to JSON
           $json = $map | ConvertTo-Json -Depth 3 -Compress
           echo "deployment_json=$json" >> $env:GITHUB_OUTPUT
-          
 
           echo "--------------------deployment_json---------------------------"
           echo "$json"
