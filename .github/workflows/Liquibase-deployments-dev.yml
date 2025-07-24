@@ -248,7 +248,7 @@ jobs:
         run: |
           # Specify the file to edit
           $FILE = "pom.xml"
-          $MODULES = "${{ steps.list-changes-latest.outputs.MODULES }}"
+          $MODULES = "${{ steps.list-changes.outputs.MODULES }}"
           # Ensure there's a valid list of filtered modules
           if ($MODULES -eq "" -or $MODULES.Count -eq 0) {
             Write-Host "No modules to include. Exiting."
@@ -340,6 +340,7 @@ jobs:
 
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
+
       - name: Get the latest 2 release tags & changes between them
         id: list-changes-latest
         run: |
