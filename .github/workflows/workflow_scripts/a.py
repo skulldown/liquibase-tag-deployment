@@ -154,6 +154,10 @@ if __name__ == "__main__":
     deployment_json_raw = sys.argv[3]
     env = sys.argv[4] if len(sys.argv) > 4 else "dev"
 
+    if not changed_files_raw.strip():
+        print("No changed files provided. Exiting.")
+        sys.exit(1)  # You can use a specific exit code like 2 for this case
+
     enriched_data, filtered_files = parse_and_filter_inputs(
         changed_files_raw,
         newer_tag,
