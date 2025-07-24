@@ -10,6 +10,7 @@
     </sqlCheck>
   </preConditions>
   <include file="CHANGES/0002_CREATE_TABLES.sql"/>
+  <include file="CHANGES/0002_CREATE_TABLES_data.sql.sql"/>
   <!-- <changeSet id="tag-0002" author="AGILE_REPORTING">
     <tagDatabase tag="v1.0.0.2"/>
   </changeSet> -->
