@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-student_1
+--changeset DEMO:0010-student_2
 
 use database DEV_RZ;
 use schema AGILE_REPORTING;
@@ -9,6 +9,13 @@ use warehouse SNOWFLAKE_LEARNING_WH;
 
 
 CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_1(
+    ID             NUMBER       PRIMARY KEY,
+    NAME           STRING       NOT NULL,
+    STATUS         STRING,
+    CREATED_AT     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS DEV_TZ.ACCOUNTING_ANALYTICS.Student_2(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
