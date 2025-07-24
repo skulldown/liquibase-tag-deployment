@@ -125,22 +125,22 @@ def update_changelog(conn, config, tag):
             cursor.execute(f"USE DATABASE {database}")
             cursor.execute(f"USE SCHEMA {schema}")
 
-            print(f"\n🔄 Updating DATABASECHANGELOG in {database}.{schema}...")
+            print(f"\nUpdating DATABASECHANGELOG in {database}.{schema}...")
 
             update_sql = """
                 UPDATE DATABASECHANGELOG
                 SET TAG = %s
                 WHERE DEPLOYMENT_ID = %s
             """
-            print(f"📄 Executing SQL: {update_sql.strip()}")
-            print(f"📌 Params: TAG = '{tag}', DEPLOYMENT_ID = '{deployment_id}'")
+            print(f"Executing SQL: {update_sql.strip()}")
+            print(f"Params: TAG = '{tag}', DEPLOYMENT_ID = '{deployment_id}'")
 
             cursor.execute(update_sql, (tag, deployment_id))
-            print(f"✅ Update complete. DEPLOYMENT_ID='{deployment_id}', TAG='{tag}'")
+            print(f"Update complete. DEPLOYMENT_ID='{deployment_id}', TAG='{tag}'")
 
             cursor.close()
     except Exception as e:
-        print(f"❌ Error while updating changelog: {e}")
+        print(f"Error while updating changelog: {e}")
 
 
 
