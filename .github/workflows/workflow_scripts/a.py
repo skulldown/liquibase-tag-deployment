@@ -44,7 +44,7 @@ def parse_and_filter_inputs(changed_files_raw, newer_tag, deployment_json_raw, e
     for key, deployments in deployment_data.items():
         parts = key.split('/')
         if len(parts) < 3:
-            print(f"⚠️ Skipping invalid key: {key}")
+            print(f"Skipping invalid key: {key}")
             continue
 
         database = f"{env}_{parts[1]}"
@@ -59,7 +59,7 @@ def parse_and_filter_inputs(changed_files_raw, newer_tag, deployment_json_raw, e
         enriched_data[key] = enriched_list
 
     print(json.dumps(enriched_data, indent=2))
-    print("\n✅ Done: Enriched deployment entries are ready for use.")
+    print("\nDone: Enriched deployment entries are ready for use.")
 
     return enriched_data, filtered_files
 
