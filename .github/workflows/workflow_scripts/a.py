@@ -44,7 +44,7 @@ def parse_and_filter_inputs(changed_files_raw, newer_tag, deployment_json_raw, e
     for key, deployments in deployment_data.items():
         parts = key.split('/')
         if len(parts) < 3:
-            print(f"⚠️ Skipping invalid key: {key}")
+            print(f"Skipping invalid key: {key}")
             continue
 
         database = f"{env}_{parts[1]}"
@@ -59,7 +59,7 @@ def parse_and_filter_inputs(changed_files_raw, newer_tag, deployment_json_raw, e
         enriched_data[key] = enriched_list
 
     print(json.dumps(enriched_data, indent=2))
-    print("\n✅ Done: Enriched deployment entries are ready for use.")
+    print("\nDone: Enriched deployment entries are ready for use.")
 
     return enriched_data, filtered_files
 
@@ -125,22 +125,22 @@ def update_changelog(conn, config, tag):
             cursor.execute(f"USE DATABASE {database}")
             cursor.execute(f"USE SCHEMA {schema}")
 
-            print(f"\n🔄 Updating DATABASECHANGELOG in {database}.{schema}...")
+            print(f"\nUpdating DATABASECHANGELOG in {database}.{schema}...")
 
             update_sql = """
                 UPDATE DATABASECHANGELOG
                 SET TAG = %s
                 WHERE DEPLOYMENT_ID = %s
             """
-            print(f"📄 Executing SQL: {update_sql.strip()}")
-            print(f"📌 Params: TAG = '{tag}', DEPLOYMENT_ID = '{deployment_id}'")
+            print(f"Executing SQL: {update_sql.strip()}")
+            print(f"Params: TAG = '{tag}', DEPLOYMENT_ID = '{deployment_id}'")
 
             cursor.execute(update_sql, (tag, deployment_id))
-            print(f"✅ Update complete. DEPLOYMENT_ID='{deployment_id}', TAG='{tag}'")
+            print(f"Update complete. DEPLOYMENT_ID='{deployment_id}', TAG='{tag}'")
 
             cursor.close()
     except Exception as e:
-        print(f"❌ Error while updating changelog: {e}")
+        print(f"Error while updating changelog: {e}")
 
 
 
