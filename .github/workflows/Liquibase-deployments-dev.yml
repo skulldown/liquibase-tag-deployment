@@ -414,7 +414,7 @@ jobs:
           echo "DEPLOYMENT_JSON:"
           echo '${{ steps.liquibase-update.outputs.deployment_json }}'
 
-          python .github/workflows/workflow_scripts/a.py \
+          python .github/workflows/workflow_scripts/tag_deployment.py \
             "${{ steps.list-changes-latest.outputs.CHANGED_FILES }}" \
             "${{ steps.list-changes-latest.outputs.NEWER_TAG }}" \
             '${{ steps.liquibase-update.outputs.deployment_json }}'
