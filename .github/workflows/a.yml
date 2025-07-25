@@ -22,7 +22,7 @@ on:
   #     - main
   push:
     branches:
-      - testing
+      - main
 
 
 jobs:
