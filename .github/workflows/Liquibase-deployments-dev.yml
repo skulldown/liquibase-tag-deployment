@@ -416,7 +416,6 @@ jobs:
 
       - name: Use outputs
         run: |
-          echo "📌 Latest: ${{ steps.show_runs.outputs.latest_title }} (Status: ${{ steps.show_runs.outputs.latest_conclusion }})"
           echo "🟩 Previous success: ${{ steps.show_runs.outputs.previous_success_title }}"
           echo "🔗 Link: ${{ steps.show_runs.outputs.previous_success_url }}"
 
@@ -437,7 +436,7 @@ jobs:
 
           # Get the older and newer tag
           $newerTag = $RELEASE_TAGS[0]  # Newest tag (1st tag)
-          $olderTag = $RELEASE_TAGS[-1] # # Oldest tag (4th tag)
+          $olderTag = ${{ steps.show_runs.outputs.previous_success_title }}
 
           # Debugging - Ensure tags are correct
           Write-Host "Comparing changes between $olderTag and $newerTag"
