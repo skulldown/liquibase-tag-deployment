@@ -183,35 +183,92 @@ jobs:
       - name: Fetch all tags
         run: git fetch origin 'refs/tags/*:refs/tags/*' --force
 
-      - name: Get the latest 4 release tags & changes between them
+      # - name: Get the latest 4 release tags & changes between them
+      #   id: list-changes
+      #   run: |
+      #     # Fetch the latest 4 release tags
+      #     $RELEASE_TAGS = @(gh release list --limit 4 | awk '{print $1}')
+
+      #     # Debugging: Print the last 4 tags
+      #     Write-Host "the last 4 tags: $($RELEASE_TAGS -join ', ')"
+
+      #     # Check if we have any tags
+      #     if (-not $RELEASE_TAGS) {
+      #         Write-Host "No tags found!"
+      #         exit
+      #     }
+
+      #     # Get the older and newer tag
+      #     $newerTag = $RELEASE_TAGS[0]  # Newest tag (1st tag)
+      #     $olderTag = $RELEASE_TAGS[-1] # # Oldest tag (4th tag)
+
+      #     # Debugging - Ensure tags are correct
+      #     Write-Host "Comparing changes between $olderTag and $newerTag"
+
+      #     # Get the changes between the two tags
+      #     $changed_files = git diff --name-only $olderTag $newerTag
+          
+      #     # Extract directories and filter based on specific patterns
+      #     $filtered_dirs = $changed_files | Select-String -Pattern '/' | ForEach-Object { $_ -replace '/', '\' } | ForEach-Object { ($_ -split '\\')[0..1] -join '\' } | Sort-Object -Unique
+          
+      #     # Apply filtering based on multiple patterns
+      #     $final_dirs = $filtered_dirs | Where-Object { 
+      #       $_ -like 'QUALITY*' -or 
+      #       $_ -like 'AUDIT*' -or 
+      #       $_ -like 'RZ*' -or 
+      #       $_ -like 'RCZ*' -or 
+      #       $_ -like 'TZ*' -or 
+      #       $_ -like 'CZ*' -or 
+      #       $_ -like 'SECURITY*' -or
+      #       $_ -like 'MULESOFT*' -or
+      #       $_ -like 'DATA_SHARE*' -or
+      #       $_ -like 'WORK_FLOW_TEST*'
+      #     } | ForEach-Object {
+      #       if ($_ -like 'QUALITY*') {
+      #         "QUALITY"  # Only include "QUALITY" for QUALITY-related directories
+      #       } else {
+      #         $_         # Include the full directory path for others
+      #       }
+      #     } | Sort-Object -Unique 
+
+      #     # Output the final directories for reference
+      #     Write-Host "Filtered directories:"
+
+      #     # Convert the array of directories to a list for later use
+      #     echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
+      #     # Log the MODULES variable
+      #     Write-Host "Modules set: $($final_dirs -join ',')"
+      - name: Get the latest 4 release tags, changes between them & their workflow run status
         id: list-changes
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
+          # Authenticate gh CLI
+          gh auth login --with-token < $env:GH_TOKEN
+
           # Fetch the latest 4 release tags
-          $RELEASE_TAGS = @(gh release list --limit 4 | awk '{print $1}')
+          $RELEASE_TAGS = @(gh release list --limit 4 | ForEach-Object { ($_ -split '\s+')[0] })
 
-          # Debugging: Print the last 4 tags
-          Write-Host "the last 4 tags: $($RELEASE_TAGS -join ', ')"
+          Write-Host "The last 4 tags: $($RELEASE_TAGS -join ', ')"
 
-          # Check if we have any tags
-          if (-not $RELEASE_TAGS) {
-              Write-Host "No tags found!"
-              exit
+          if (-not $RELEASE_TAGS -or $RELEASE_TAGS.Count -eq 0) {
+            Write-Host "No tags found!"
+            exit 1
           }
 
-          # Get the older and newer tag
+          # Get the older and newer tag for diff
           $newerTag = $RELEASE_TAGS[0]  # Newest tag (1st tag)
-          $olderTag = $RELEASE_TAGS[-1] # # Oldest tag (4th tag)
+          $olderTag = $RELEASE_TAGS[-1] # Oldest tag (4th tag)
 
-          # Debugging - Ensure tags are correct
           Write-Host "Comparing changes between $olderTag and $newerTag"
 
-          # Get the changes between the two tags
+          # Get changed files between older and newer tag
           $changed_files = git diff --name-only $olderTag $newerTag
-          
-          # Extract directories and filter based on specific patterns
+
+          # Extract and filter directories
           $filtered_dirs = $changed_files | Select-String -Pattern '/' | ForEach-Object { $_ -replace '/', '\' } | ForEach-Object { ($_ -split '\\')[0..1] -join '\' } | Sort-Object -Unique
-          
-          # Apply filtering based on multiple patterns
+
           $final_dirs = $filtered_dirs | Where-Object { 
             $_ -like 'QUALITY*' -or 
             $_ -like 'AUDIT*' -or 
@@ -225,22 +282,50 @@ jobs:
             $_ -like 'WORK_FLOW_TEST*'
           } | ForEach-Object {
             if ($_ -like 'QUALITY*') {
-              "QUALITY"  # Only include "QUALITY" for QUALITY-related directories
+              "QUALITY"
             } else {
-              $_         # Include the full directory path for others
+              $_
             }
-          } | Sort-Object -Unique 
+          } | Sort-Object -Unique
 
-          # Output the final directories for reference
-          Write-Host "Filtered directories:"
+          Write-Host "Filtered directories: $($final_dirs -join ', ')"
 
-          # Convert the array of directories to a list for later use
+          # Output modules for later steps
           echo "MODULES=$($final_dirs -join ',')" >> $env:GITHUB_OUTPUT
-          # Log the MODULES variable
-          Write-Host "Modules set: $($final_dirs -join ',')"
-        env:
-          GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
-      
+
+          # Now fetch workflow runs triggered by release event, filter by these tag names and print their status
+          Write-Host "`nRelease workflow runs status for last 4 releases:"
+
+          # Get last 10 runs triggered by release (to be sure)
+          $runsJson = gh api "repos/$env:REPO/actions/runs?event=release&per_page=10"
+          $   $status = $matchingRun.status
+              $conclusion = $matchingRun.conclusion
+              $createdAt = $matchingRun.created_at
+              Write-Host "Tag: $tag  => Run #$runNumber | Status: $status | Conclusion: $conclusion | Created at: $createdAt"
+            }
+            else {
+              Write-Host "Tag: $tag => No matching workflow run found."
+            }
+          }runs = $runsJson | ConvertFrom-Json
+
+          foreach ($tag in $RELEASE_TAGS) {
+            # Filter runs for the tag in head_branch or head_sha (some workflows use ref/tag)
+            $matchingRun = $runs.workflow_runs | Where-Object { $_.head_branch -eq $tag -or $_.head_ref -eq $tag -or $_.name -like "*$tag*" } | Sort-Object -Property created_at -Descending | Select-Object -First 1
+            
+            if ($null -ne $matchingRun) {
+              $runNumber = $matchingRun.run_number
+              $status = $matchingRun.status
+              $conclusion = $matchingRun.conclusion
+              $createdAt = $matchingRun.created_at
+              Write-Host "Tag: $tag  => Run #$runNumber | Status: $status | Conclusion: $conclusion | Created at: $createdAt"
+            }
+            else {
+              Write-Host "Tag: $tag => No matching workflow run found."
+            }
+          }
+        # env:
+        #   GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
+        
       - name: Install Python dependencies
         run: pip install snowflake-connector-python
 
