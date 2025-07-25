@@ -287,8 +287,8 @@ jobs:
       #   env:
       #     GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
         
-      # - name: Install Python dependencies
-      #   run: pip install snowflake-connector-python
+      - name: Install Python dependencies
+        run: pip install snowflake-connector-python
 
       # - name: Replace <module> entries in the XML file & Run mvn liquibase update
       #   run: |
