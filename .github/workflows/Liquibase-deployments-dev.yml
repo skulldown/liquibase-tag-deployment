@@ -241,8 +241,7 @@ jobs:
       - name: Get the latest 4 release tags, changes between them & their workflow run status
         id: list-changes
         run: |
-          # Authenticate gh CLI
-          gh auth login --with-token < $env:GH_TOKEN
+          # # Authenticate gh CLI
 
           # Fetch the latest 4 release tags
           $RELEASE_TAGS = @(gh release list --limit 4 | ForEach-Object { ($_ -split '\s+')[0] })
