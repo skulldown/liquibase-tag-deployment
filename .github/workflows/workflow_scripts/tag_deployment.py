@@ -157,11 +157,11 @@ if __name__ == "__main__":
 
     if not changed_files_raw.strip():
         print("No changed files provided. Exiting.")
-        sys.exit(1)  # You can use a specific exit code like 2 for this case
+        sys.exit(0)  # You can use a specific exit code like 2 for this case
 
     if not deployment_json_raw.strip():
         print("No deployment JSON provided. Exiting.")
-        sys.exit(1)
+        sys.exit(0)
 
     enriched_data, filtered_files = parse_and_filter_inputs(
         changed_files_raw,
