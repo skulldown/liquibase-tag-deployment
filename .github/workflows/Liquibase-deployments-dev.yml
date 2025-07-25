@@ -2,8 +2,6 @@ name: Dev - Liquibase deployments
 on: 
   release: 
     types: [ published, edited]
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       environment:
