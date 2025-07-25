@@ -1,13 +1,13 @@
 --liquibase formatted sql
 
---changeset DEMO:student_9
+--changeset DEMO:student_1111
 use database DEV_TZ;
 use schema AGILE_REPORTING;
 use role FULL_ACCESS_ROLE;
 use warehouse SNOWFLAKE_LEARNING_WH;
 
 
-CREATE DEV_TZ.AGILE_REPORTING.student_9(
+CREATE T DEV_TZ.AGILE_REPORTING.student_1111(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
