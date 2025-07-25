@@ -183,30 +183,26 @@ jobs:
       - name: Fetch all tags
         run: git fetch origin 'refs/tags/*:refs/tags/*' --force
 
-      - name: Get workflow run status per release tag
+      - name: Check last 4 workflow run statuses for DEV_Liquibase_Job
         run: |
-          $RELEASE_TAGS = @(gh release list --limit 4 | awk '{print $1}')
+          $workflowName = "DEV_Liquibase_Job"
 
-          Write-Host "`nChecking workflow status for tags: $($RELEASE_TAGS -join ', ')`n"
+          Write-Host "`n🔍 Fetching last 4 runs for '$workflowName'..."
 
-          foreach ($tag in $RELEASE_TAGS) {
-              # Get commit SHA for the tag
-              $tag_commit = git rev-list -n 1 $tag
+          # Fetch runs and filter by name
+          $runs = gh run list --workflow "$workflowName" --json name,status,conclusion,htmlUrl,createdAt --limit 4 | ConvertFrom-Json
 
-              # Get workflow runs for this repo triggered by 'release' events
-              $runs = gh run list --event release --json databaseId,status,conclusion,headSha,htmlUrl --limit 100 | ConvertFrom-Json
+          if (-not $runs) {
+              Write-Host "❌ No workflow runs found for $workflowName"
+              exit 1
+          }
 
-              # Match the run using commit SHA
-              $run = $runs | Where-Object { $_.headSha -eq $tag_commit }
-
-              if ($run) {
-                  Write-Host "✅ Tag: $tag"
-                  Write-Host "   - Status: $($run.status)"
-                  Write-Host "   - Conclusion: $($run.conclusion)"
-                  Write-Host "   - Run URL: $($run.htmlUrl)`n"
-              } else {
-                  Write-Host "⚠️ No workflow run found for tag: $tag"
-              }
+          foreach ($run in $runs) {
+              Write-Host "`n🔁 Run: $($run.name)"
+              Write-Host "   🕓 Created: $($run.createdAt)"
+              Write-Host "   📄 Status: $($run.status)"
+              Write-Host "   ✅ Conclusion: $($run.conclusion)"
+              Write-Host "   🔗 URL: $($run.htmlUrl)"
           }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
