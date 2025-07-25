@@ -9,6 +9,7 @@ ALLOWED_FOLDERS = {
     "SECURITY", "MULESOFT", "DATA_SHARE", "WORK_FLOW_TEST"
 }
 
+
 def parse_and_filter_inputs(changed_files_raw, newer_tag, deployment_json_raw, env):
     """Parse CLI inputs, filter changed files, and enrich deployment data with database/schema."""
     print("\n== Received Parameters ==")
