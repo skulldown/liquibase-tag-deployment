@@ -7,7 +7,7 @@ use role FULL_ACCESS_ROLE;
 use warehouse SNOWFLAKE_LEARNING_WH;
 
 
-CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.student_9(
+CREATE DEV_TZ.AGILE_REPORTING.student_9(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
