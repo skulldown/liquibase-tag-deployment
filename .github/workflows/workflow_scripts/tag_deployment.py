@@ -158,7 +158,7 @@ if __name__ == "__main__":
     if not changed_files_raw.strip():
         print("No changed files provided. Exiting.")
         sys.exit(1)  # You can use a specific exit code like 2 for this case
-    
+
     if not deployment_json_raw.strip():
         print("No deployment JSON provided. Exiting.")
         sys.exit(1)

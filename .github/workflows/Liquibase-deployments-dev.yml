@@ -436,7 +436,7 @@ jobs:
 
           # Get the older and newer tag
           $newerTag = $RELEASE_TAGS[0]  # Newest tag (1st tag)
-          $olderTag = ${{ steps.show_runs.outputs.previous_success_title }}
+          $olderTag = "${{ steps.show_runs.outputs.previous_success_title }}"
 
           # Debugging - Ensure tags are correct
           Write-Host "Comparing changes between $olderTag and $newerTag"
