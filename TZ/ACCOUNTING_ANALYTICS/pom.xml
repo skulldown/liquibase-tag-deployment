@@ -21,7 +21,7 @@
         <plugins>
             <plugin>
                 <groupId>org.liquibase</groupId>
-             Student_5   <artifactId>liquibase-maven-plugin</artifactId>
+                <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.28.0</version>
                 <configuration>
                     <skip>false</skip>
