@@ -240,9 +240,6 @@ jobs:
       #     Write-Host "Modules set: $($final_dirs -join ',')"
       - name: Get the latest 4 release tags, changes between them & their workflow run status
         id: list-changes
-        env:
-          GH_TOKEN: ${{ secrets.TOKEN }}
-          REPO: ${{ github.repository }}
         run: |
           # Authenticate gh CLI
           gh auth login --with-token < $env:GH_TOKEN
@@ -323,8 +320,8 @@ jobs:
               Write-Host "Tag: $tag => No matching workflow run found."
             }
           }
-        # env:
-        #   GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
         
       - name: Install Python dependencies
         run: pip install snowflake-connector-python
