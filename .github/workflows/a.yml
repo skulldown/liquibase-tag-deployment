@@ -1,5 +1,5 @@
-name: Dev - Liquibase deployments 1 release
-on: 
+# name: Dev - Liquibase deployments 1 release
+# on: 
 #   release: 
 #     types: [ published, edited]
 #     branches:
@@ -9,7 +9,10 @@ on:
 #       environment:
 #           required: true
 #           type: choice
-#           description: "environment"
+#           description: "environment"  push:
+#     branches:
+#       - main
+
 #           options:
 #             - "Dev"
 #       liquibase_tag:
@@ -20,50 +23,27 @@ on:
   #   types: [ opened, edited ]
   #   branches:
   #     - main
-  push:
-    branches:
-      - main
+#   push:
+#     branches:
+#       - main
 
 
-jobs:
+# jobs:
 
-  DEV_Liquibase_Job:
-    # if: github.event_name == 'release'
-    runs-on: windows-latest
-    steps:
-      - name: Clone Repo
-        uses: actions/checkout@v4
+#   DEV_Liquibase_Job:
+#     # if: github.event_name == 'release'
+#     runs-on: windows-latest
+#     steps:
+#       - name: Clone Repo
+#         uses: actions/checkout@v4
       
-      - name: Fetch all tags
-        run: git fetch origin 'refs/tags/*:refs/tags/*' --force
+#       - name: Fetch all tags
+#         run: git fetch origin 'refs/tags/*:refs/tags/*' --force
       
-      - name: Install Python dependencies
-        run: pip install snowflake-connector-python
+#       - name: Install Python dependencies
+#         run: pip install snowflake-connector-python
 
-      - name: Show last 4 runs of current workflow
-        run: |
-          # Get the name of the current workflow from environment
-          $workflowName = "${{ github.workflow }}"
 
-          Write-Host "`n🔍 Fetching last 4 runs for current workflow: '$workflowName'"
-
-          # Fetch last 4 runs of this workflow
-          $runs = gh run list --workflow "$workflowName" --json status,conclusion,displayTitle,url,createdAt --limit 4 | ConvertFrom-Json
-
-          if (-not $runs) {
-              Write-Host "❌ No recent runs found for workflow: $workflowName"
-              exit 1
-          }
-
-          foreach ($run in $runs) {
-              Write-Host "`n🔁 Run: $($run.displayTitle)"
-              Write-Host "   🕓 Created: $($run.createdAt)"
-              Write-Host "   📄 Status: $($run.status)"
-              Write-Host "   ✅ Conclusion: $($run.conclusion)"
-              Write-Host "   🔗 URL: $($run.url)"
-          }
-        env:
-          GH_TOKEN: ${{ secrets.TOKEN }}
 #       - name: Get the latest 2 release tags & changes between them
 #         id: list-changes
 #         run: |
