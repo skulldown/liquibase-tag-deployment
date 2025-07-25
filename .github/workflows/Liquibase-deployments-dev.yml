@@ -190,7 +190,7 @@ jobs:
           Write-Host "`n🔍 Fetching last 4 runs for '$workflowName'..."
 
           # Fetch runs and filter by name
-          $runs = gh run list --workflow "$workflowName" --json name,status,conclusion,htmlUrl,createdAt --limit 4 | ConvertFrom-Json
+          $runs = gh run list --workflow "$workflowName" --json name,status,conclusion,url,createdAt --limit 4 | ConvertFrom-Json
 
           if (-not $runs) {
               Write-Host "❌ No workflow runs found for $workflowName"
@@ -202,7 +202,7 @@ jobs:
               Write-Host "   🕓 Created: $($run.createdAt)"
               Write-Host "   📄 Status: $($run.status)"
               Write-Host "   ✅ Conclusion: $($run.conclusion)"
-              Write-Host "   🔗 URL: $($run.htmlUrl)"
+              Write-Host "   🔗 URL: $($run.url)"
           }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
