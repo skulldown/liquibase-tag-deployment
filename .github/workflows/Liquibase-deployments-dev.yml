@@ -40,17 +40,19 @@ jobs:
         id: show_runs
         run: |
           $workflowName = "${{ github.workflow }}"
-          Write-Host "`n🔍 Fetching last 4 runs for workflow: '$workflowName'..."
+          Write-Host "`n🔍 Fetching last 20 runs for workflow: '$workflowName'..."
 
-          $runs = gh run list --workflow "$workflowName" --json displayTitle,status,conclusion,url,createdAt --limit 4 | ConvertFrom-Json
+          $allRuns = gh run list --workflow "$workflowName" --json displayTitle,status,conclusion,url,createdAt --limit 20 | ConvertFrom-Json
 
-          if (-not $runs) {
+          if (-not $allRuns) {
             Write-Host "❌ No recent runs found for workflow: $workflowName"
             exit 1
           }
 
-          # Print run info
-          foreach ($run in $runs) {
+          # Show the first 4 runs for visibility
+          $recentRuns = $allRuns[0..([Math]::Min(3, $allRuns.Count - 1))]
+          Write-Host "`n🧾 Showing the last 4 runs:"
+          foreach ($run in $recentRuns) {
             Write-Host "`n🔁 Title: $($run.displayTitle)"
             Write-Host "   🕓 Created: $($run.createdAt)"
             Write-Host "   📄 Status: $($run.status)"
@@ -58,25 +60,40 @@ jobs:
             Write-Host "   🔗 URL: $($run.url)"
           }
 
-          # Find the first success in last 4
-          $successfulRun = $runs | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
+          # Step 1: Try to find success in last 4 runs
+          $successInRecent = $recentRuns | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
 
-          if ($successfulRun) {
+          if ($successInRecent) {
             Write-Host "`n✅ Found successful run in last 4:"
-            Write-Host "   🔁 Title: $($successfulRun.displayTitle)"
-            Write-Host "   🔗 URL: $($successfulRun.url)"
-            "previous_success_title=$($successfulRun.displayTitle)" >> $env:GITHUB_OUTPUT
-            "previous_success_url=$($successfulRun.url)" >> $env:GITHUB_OUTPUT
+            Write-Host "   🔁 Title: $($successInRecent.displayTitle)"
+            Write-Host "   🔗 URL: $($successInRecent.url)"
+            "previous_success_title=$($successInRecent.displayTitle)" >> $env:GITHUB_OUTPUT
+            "previous_success_url=$($successInRecent.url)" >> $env:GITHUB_OUTPUT
           } else {
-            Write-Host "`n⚠️ No successful runs found in last 4."
-            "previous_success_title=" >> $env:GITHUB_OUTPUT
-            "previous_success_url=" >> $env:GITHUB_OUTPUT
+            Write-Host "`n⚠️ No successful run found in last 4. Searching older runs..."
+
+            $fallbackSuccess = $allRuns | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
+
+            if ($fallbackSuccess) {
+              Write-Host "`n✅ Found earlier successful run:"
+              Write-Host "   🔁 Title: $($fallbackSuccess.displayTitle)"
+              Write-Host "   🔗 URL: $($fallbackSuccess.url)"
+              "previous_success_title=$($fallbackSuccess.displayTitle)" >> $env:GITHUB_OUTPUT
+              "previous_success_url=$($fallbackSuccess.url)" >> $env:GITHUB_OUTPUT
+            } else {
+              Write-Host "`n❌ No successful run found at all in last 20."
+              "previous_success_title=" >> $env:GITHUB_OUTPUT
+              "previous_success_url=" >> $env:GITHUB_OUTPUT
+            }
           }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
 
-
-
+      # ➕ Added step to echo values
+      - name: Echo previous success values
+        run: |
+          echo "✅ Previous Success Title: ${{ steps.show_runs.outputs.previous_success_title }}"
+          echo "🔗 Previous Success URL:   ${{ steps.show_runs.outputs.previous_success_url }}"
       - name: Get the latest 4 release tags & changes between them
         id: list-changes
         run: |
@@ -240,7 +257,7 @@ jobs:
           echo "🟩 Previous success: ${{ steps.show_runs.outputs.previous_success_title }}"
           echo "🔗 Link: ${{ steps.show_runs.outputs.previous_success_url }}"
 
-      - name: Get the latest 2 release tags & changes between them
+      - name: Get the previous success release tags & changes between them
         id: list-changes-latest
         run: |
           # Fetch the latest 2 release tags
@@ -304,7 +321,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
           
-      - name: Add tags using Python 3script
+      - name: Add tags using Python script
         shell: bash
         run: |
           echo "== Debug Output =="
@@ -317,5 +334,3 @@ jobs:
             "${{ steps.list-changes-latest.outputs.CHANGED_FILES }}" \
             "${{ steps.list-changes-latest.outputs.NEWER_TAG }}" \
             '${{ steps.liquibase-update.outputs.deployment_json }}'
-
-
