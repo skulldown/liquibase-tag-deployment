@@ -196,10 +196,7 @@ jobs:
             exit 1
           }
 
-          # Filter out in_progress, queued, etc.
-          $completedRuns = $runs | Where-Object { $_.status -eq "completed" }
-
-          # Print all last 4 (even in-progress)
+          # Show first 4 runs
           foreach ($run in $runs[0..3]) {
             Write-Host "`n🔁 Title: $($run.displayTitle)"
             Write-Host "   🕓 Created: $($run.createdAt)"
@@ -208,24 +205,55 @@ jobs:
             Write-Host "   🔗 URL: $($run.url)"
           }
 
-          # Latest completed run
-          $latestCompleted = $completedRuns[0]
-          "latest_conclusion=$($latestCompleted.conclusion)" >> $env:GITHUB_OUTPUT
-          "latest_title=$($latestCompleted.displayTitle)" >> $env:GITHUB_OUTPUT
+          # Get latest completed run (first that is not in_progress or queued)
+          $latestCompleted = $runs | Where-Object { $_.status -eq "completed" } | Select-Object -First 1
 
-          # Previous successful (after latest completed)
-          $previousSuccess = $completedRuns | Where-Object { $_.conclusion -eq "success" } | Select-Object -Skip 1 -First 1
+          if (-not $latestCompleted) {
+            Write-Host "`n❌ No completed run found."
+            exit 1
+          }
+
+          $latestTitle = $latestCompleted.displayTitle
+          $latestConclusion = $latestCompleted.conclusion
+
+          # Output latest info
+          "latest_title=$latestTitle" >> $env:GITHUB_OUTPUT
+          "latest_conclusion=$latestConclusion" >> $env:GITHUB_OUTPUT
+
+          # Now find previous successful run (after skipping the latest)
+          $skipFirst = $true
+          $previousSuccess = $null
+
+          foreach ($run in $runs) {
+            if ($run.status -ne "completed") {
+              continue
+            }
+
+            if ($skipFirst) {
+              # Skip the latest completed
+              $skipFirst = $false
+              continue
+            }
+
+            if ($run.conclusion -eq "success") {
+              $previousSuccess = $run
+              break
+            }
+          }
 
           if ($previousSuccess) {
-            Write-Host "`n✅ Previous successful run (before latest):"
+            Write-Host "`n✅ Previous successful run:"
             Write-Host "   🔁 Title: $($previousSuccess.displayTitle)"
             Write-Host "   🔗 URL: $($previousSuccess.url)"
+            "previous_success_title=$($previousSuccess.displayTitle)" >> $env:GITHUB_OUTPUT
+            "previous_success_url=$($previousSuccess.url)" >> $env:GITHUB_OUTPUT
           } else {
             Write-Host "`n⚠️ No previous successful run found (excluding latest)."
+            "previous_success_title=" >> $env:GITHUB_OUTPUT
+            "previous_success_url=" >> $env:GITHUB_OUTPUT
           }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
-
 
 
       # - name: Get the latest 4 release tags & changes between them
@@ -386,10 +414,11 @@ jobs:
       #   env:
       #     GH_TOKEN: ${{ secrets.TOKEN }}
 
-      - name: Use latest run info
+      - name: Use outputs
         run: |
-          echo "📝 Latest Run Title: ${{ steps.show_runs.outputs.latest_title }}"
-          echo "✅ Latest Run Conclusion: ${{ steps.show_runs.outputs.latest_conclusion }}"
+          echo "📌 Latest: ${{ steps.show_runs.outputs.latest_title }} (Status: ${{ steps.show_runs.outputs.latest_conclusion }})"
+          echo "🟩 Previous success: ${{ steps.show_runs.outputs.previous_success_title }}"
+          echo "🔗 Link: ${{ steps.show_runs.outputs.previous_success_url }}"
 
       - name: Get the latest 2 release tags & changes between them
         id: list-changes-latest
