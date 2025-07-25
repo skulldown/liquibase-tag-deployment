@@ -187,17 +187,17 @@ jobs:
         id: show_runs
         run: |
           $workflowName = "${{ github.workflow }}"
-          Write-Host "`n🔍 Fetching last 4 runs for current workflow: '$workflowName'..."
+          Write-Host "`n🔍 Fetching last 4 runs for workflow: '$workflowName'..."
 
-          $runs = gh run list --workflow "$workflowName" --json displayTitle,status,conclusion,url,createdAt --limit 10 | ConvertFrom-Json
+          $runs = gh run list --workflow "$workflowName" --json displayTitle,status,conclusion,url,createdAt --limit 4 | ConvertFrom-Json
 
           if (-not $runs) {
             Write-Host "❌ No recent runs found for workflow: $workflowName"
             exit 1
           }
 
-          # Show first 4 runs
-          foreach ($run in $runs[0..3]) {
+          # Print run info
+          foreach ($run in $runs) {
             Write-Host "`n🔁 Title: $($run.displayTitle)"
             Write-Host "   🕓 Created: $($run.createdAt)"
             Write-Host "   📄 Status: $($run.status)"
@@ -205,55 +205,23 @@ jobs:
             Write-Host "   🔗 URL: $($run.url)"
           }
 
-          # Get latest completed run (first that is not in_progress or queued)
-          $latestCompleted = $runs | Where-Object { $_.status -eq "completed" } | Select-Object -First 1
+          # Find the first success in last 4
+          $successfulRun = $runs | Where-Object { $_.conclusion -eq "success" } | Select-Object -First 1
 
-          if (-not $latestCompleted) {
-            Write-Host "`n❌ No completed run found."
-            exit 1
-          }
-
-          $latestTitle = $latestCompleted.displayTitle
-          $latestConclusion = $latestCompleted.conclusion
-
-          # Output latest info
-          "latest_title=$latestTitle" >> $env:GITHUB_OUTPUT
-          "latest_conclusion=$latestConclusion" >> $env:GITHUB_OUTPUT
-
-          # Now find previous successful run (after skipping the latest)
-          $skipFirst = $true
-          $previousSuccess = $null
-
-          foreach ($run in $runs) {
-            if ($run.status -ne "completed") {
-              continue
-            }
-
-            if ($skipFirst) {
-              # Skip the latest completed
-              $skipFirst = $false
-              continue
-            }
-
-            if ($run.conclusion -eq "success") {
-              $previousSuccess = $run
-              break
-            }
-          }
-
-          if ($previousSuccess) {
-            Write-Host "`n✅ Previous successful run:"
-            Write-Host "   🔁 Title: $($previousSuccess.displayTitle)"
-            Write-Host "   🔗 URL: $($previousSuccess.url)"
-            "previous_success_title=$($previousSuccess.displayTitle)" >> $env:GITHUB_OUTPUT
-            "previous_success_url=$($previousSuccess.url)" >> $env:GITHUB_OUTPUT
+          if ($successfulRun) {
+            Write-Host "`n✅ Found successful run in last 4:"
+            Write-Host "   🔁 Title: $($successfulRun.displayTitle)"
+            Write-Host "   🔗 URL: $($successfulRun.url)"
+            "previous_success_title=$($successfulRun.displayTitle)" >> $env:GITHUB_OUTPUT
+            "previous_success_url=$($successfulRun.url)" >> $env:GITHUB_OUTPUT
           } else {
-            Write-Host "`n⚠️ No previous successful run found (excluding latest)."
+            Write-Host "`n⚠️ No successful runs found in last 4."
             "previous_success_title=" >> $env:GITHUB_OUTPUT
             "previous_success_url=" >> $env:GITHUB_OUTPUT
           }
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}
+
 
 
       # - name: Get the latest 4 release tags & changes between them
