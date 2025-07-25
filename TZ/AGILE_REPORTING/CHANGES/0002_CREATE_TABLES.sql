@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:Student_2
+--changeset DEMO:Student_3
 use database DEV_TZ;
 use schema AGILE_REPORTING;
 use role FULL_ACCESS_ROLE;
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.Student_1(
 
 
 
-CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.Student_2(
+CREATE TABLE IF NOT EXISTS DEV_TZ.AGILE_REPORTING.Student_3(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,

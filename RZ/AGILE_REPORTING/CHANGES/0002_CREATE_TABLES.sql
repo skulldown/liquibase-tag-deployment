@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset DEMO:0010-student_12
+--changeset DEMO:0010-student_16
 
 use database DEV_RZ;
 use schema AGILE_REPORTING;
@@ -24,12 +24,12 @@ CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_1(
 
 
 
--- CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_3(
---     ID             NUMBER       PRIMARY KEY,
---     NAME           STRING       NOT NULL,
---     STATUS         STRING,
---     CREATED_AT     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
--- );
+CREATE TABLE IF NOT EXISTS DEV_RZ.AGILE_REPORTING.student_6(
+    ID             NUMBER       PRIMARY KEY,
+    NAME           STRING       NOT NULL,
+    STATUS         STRING,
+    CREATED_AT     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
 
 
 
