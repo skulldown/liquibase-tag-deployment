@@ -484,7 +484,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.TOKEN }}  # Authenticate GitHub CLI
           
-      - name: Add tags using Python script
+      - name: Add tags using Python 3script
         shell: bash
         run: |
           echo "== Debug Output =="
