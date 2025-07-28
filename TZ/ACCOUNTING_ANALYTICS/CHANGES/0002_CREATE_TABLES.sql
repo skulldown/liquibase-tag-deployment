@@ -1,13 +1,21 @@
 --liquibase formatted sql
 
---changeset 12:1asdasd
+--changeset 12:1asdasd3
 
 use database DEV_TZ;
 use schema ACCOUNTING_ANALYTICS;
 use role FULL_ACCESS_ROLE;
 use warehouse SNOWFLAKE_LEARNING_WH;
 
-CREATE DEV_TZ.ACCOUNTING_ANALYTICS.Student_20(
+CREATE DEV_TZ.ACCOUNTING_ANALYTICS.Student_1(
+    ID             NUMBER       PRIMARY KEY,
+    NAME           STRING       NOT NULL,
+    STATUS         STRING,
+    CREATED_AT     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE DEV_TZ.ACCOUNTING_ANALYTICS.Student_2(
     ID             NUMBER       PRIMARY KEY,
     NAME           STRING       NOT NULL,
     STATUS         STRING,
