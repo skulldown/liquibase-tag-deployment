@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset 12:Student_20
+--changeset 12:Student_21
 
 use database DEV_TZ;
 use schema ACCOUNTING_ANALYTICS;
@@ -15,3 +15,10 @@ CREATE  DEV_TZ.ACCOUNTING_ANALYTICS.Student_20(
 );
 
 
+
+CREATE  DEV_TZ.ACCOUNTING_ANALYTICS.Student_21(
+    ID             NUMBER       PRIMARY KEY,
+    NAME           STRING       NOT NULL,
+    STATUS         STRING,
+    CREATED_AT     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+);
