@@ -10,4 +10,5 @@
     </sqlCheck>
   </preConditions>
   <include file="CHANGES/0002_CREATE_TABLES.sql"/>
+  
 </databaseChangeLog>
