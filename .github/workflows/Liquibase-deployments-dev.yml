@@ -39,8 +39,6 @@ jobs:
       - name: Show last 4 runs of current workflow with title/status
         id: show_runs
         run: |
-          echo "❌ Failing this step intentionally."
-          exit 1
           $workflowName = "${{ github.workflow }}"
           Write-Host "`n🔍 Fetching last 20 runs for workflow: '$workflowName'..."
 
